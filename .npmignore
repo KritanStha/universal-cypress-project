@@ -1,0 +1,9 @@
+cypress/
+cypress.config.js
+.git/
+.gitignore
+.github/
+.vscode/
+node_modules/
+HOW_TO_USE.md
+.env

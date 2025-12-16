@@ -1,0 +1,48 @@
+{
+    "name": "universal-cypress-framework",
+    "version": "0.0.1",
+    "description": "Enterprise-grade reusable Cypress framework structures and utilities",
+    "main": "src/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/YOUR_USERNAME/universal-cypress-framework.git"
+    },
+    "bugs": {
+        "url": "https://github.com/YOUR_USERNAME/universal-cypress-framework/issues"
+    },
+    "homepage": "https://github.com/YOUR_USERNAME/universal-cypress-framework#readme",
+    "bin": {
+        "init-cypress": "./bin/init.js"
+    },
+    "files": [
+        "src",
+        "bin",
+        "templates",
+        "README.md"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "test": "cypress run",
+        "open": "cypress open",
+        "prepublishOnly": "npm test"
+    },
+    "keywords": [
+        "cypress",
+        "testing",
+        "automation",
+        "framework"
+    ],
+    "author": "",
+    "license": "ISC",
+    "peerDependencies": {
+        "@faker-js/faker": ">=8.0.0",
+        "cypress": ">=10.0.0",
+        "dotenv": ">=16.0.0"
+    },
+    "devDependencies": {
+        "@faker-js/faker": "^8.4.1",
+        "cypress": "^13.0.0"
+    }
+}
