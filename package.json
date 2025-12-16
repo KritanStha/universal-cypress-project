@@ -5,12 +5,12 @@
     "main": "src/index.js",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/YOUR_USERNAME/universal-cypress-framework.git"
+        "url": "git+https://github.com/KritanStha/universal-cypress-project.git"
     },
     "bugs": {
-        "url": "https://github.com/YOUR_USERNAME/universal-cypress-framework/issues"
+        "url": "https://github.com/KritanStha/universal-cypress-project/issues"
     },
-    "homepage": "https://github.com/YOUR_USERNAME/universal-cypress-framework#readme",
+    "homepage": "https://github.com/KritanStha/universal-cypress-project#readme",
     "bin": {
         "init-cypress": "./bin/init.js"
     },
