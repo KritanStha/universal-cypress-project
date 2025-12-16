@@ -26,7 +26,8 @@
     "scripts": {
         "test": "cypress run",
         "open": "cypress open",
-        "prepublishOnly": "npm test"
+        "prepublishOnly": "npm test",
+        "postinstall": "node bin/init.js"
     },
     "keywords": [
         "cypress",
