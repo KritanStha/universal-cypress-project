@@ -1,6 +1,6 @@
 {
     "name": "universal-cypress-framework",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "Enterprise-grade reusable Cypress framework structures and utilities",
     "main": "src/index.js",
     "repository": {
