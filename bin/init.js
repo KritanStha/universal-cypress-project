@@ -6,13 +6,20 @@ const { execSync } = require('child_process');
 
 console.log('🚀 Initializing Cypress Shared Framework...');
 
-const projectRoot = process.cwd();
+// Use INIT_CWD if available (npm install context), otherwise cwd (npx context)
+const projectRoot = process.env.INIT_CWD || process.cwd();
+
+// Prevent running on the framework itself (during dev/test of the framework)
+if (projectRoot === path.join(__dirname, '..')) {
+    console.log('⚠️  Running inside framework package. Skipping scaffolding.');
+    process.exit(0);
+}
+
 const templateDir = path.join(__dirname, '../templates');
 
 // 1. Copy cypress.config.js if not exists
 const configPath = path.join(projectRoot, 'cypress.config.js');
 const envPath = path.join(projectRoot, '.env');
-
 if (!fs.existsSync(configPath)) {
     console.log('📄 Creating cypress.config.js...');
     fs.copyFileSync(path.join(templateDir, 'cypress.config.js'), configPath);
@@ -85,5 +92,42 @@ if (fs.existsSync(exampleFile)) {
         fs.writeFileSync(exampleFile, content);
     }
 }
+
+// 6. Setup package.json and Utils
+const setupPackageJson = () => {
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+
+    // Initialize if missing
+    if (!fs.existsSync(packageJsonPath)) {
+        console.log('📄 No package.json found. Initializing...');
+        execSync('npm init -y', { stdio: 'inherit' });
+    }
+
+    // Read and update
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+    // Ensure scripts exist
+    packageJson.scripts = packageJson.scripts || {};
+    packageJson.scripts['cy:open'] = 'cypress open';
+    packageJson.scripts['cy:run'] = 'cypress run';
+
+    // Write back
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    console.log('✅ Updated package.json with Cypress scripts.');
+};
+
+const installPeerDeps = () => {
+    console.log('📦 Checking and installing peer dependencies...');
+    try {
+        // Only install if missing
+        execSync('npm list cypress dotenv', { stdio: 'ignore' });
+    } catch (e) {
+        console.log('Installing cypress and dotenv...');
+        execSync('npm install cypress dotenv --save-dev', { stdio: 'inherit' });
+    }
+};
+
+setupPackageJson();
+installPeerDeps();
 
 console.log('✅ Initialization complete! Run "npx cypress open" to start testing.');
