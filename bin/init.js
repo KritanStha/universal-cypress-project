@@ -29,32 +29,60 @@ if (!fs.existsSync(envPath)) {
 
 // 2. Copy folder structure
 const cypressDir = path.join(projectRoot, 'cypress');
+const srcDir = path.join(__dirname, '../src');
+const frameworkDest = path.join(cypressDir, 'support', 'framework');
+
 const copyRecursiveSync = (src, dest) => {
     if (fs.existsSync(src) && fs.statSync(src).isDirectory()) {
-        if (!fs.existsSync(dest)) fs.mkdirSync(dest);
+        if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
         fs.readdirSync(src).forEach(childItemName => {
             copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
         });
     } else {
-        if (!fs.existsSync(dest)) {
-            fs.copyFileSync(src, dest);
-        }
+        // ALWAYS copy files (overwrite if exists) to ensure they get the library files
+        fs.copyFileSync(src, dest);
     }
 };
 
 if (!fs.existsSync(cypressDir)) {
-    console.log('ue5c2 Scaffolding cypress/ directory...');
+    console.log('📂 Scaffolding cypress/ directory...');
     copyRecursiveSync(path.join(templateDir, 'cypress'), cypressDir);
-} else {
-    console.log('ue5c2 Cypress directory exists. Merging specific support files...');
-    // Ensure e2e.js imports our commands
-    const supportFile = path.join(cypressDir, 'support', 'e2e.js');
-    if (fs.existsSync(supportFile)) {
-        const content = fs.readFileSync(supportFile, 'utf8');
-        if (!content.includes('@cypress-shared/framework')) {
-            console.log('ue58d Adding import to cypress/support/e2e.js...');
-            fs.appendFileSync(supportFile, "\nimport 'universal-cypress-framework/src/commands';\n");
-        }
+}
+
+// 3. Eject Framework Source Code
+console.log('📦 Installing framework source code to cypress/support/framework...');
+copyRecursiveSync(srcDir, frameworkDest);
+
+// 4. Update Import Paths in Support File
+const supportFile = path.join(cypressDir, 'support', 'e2e.js');
+if (fs.existsSync(supportFile)) {
+    let content = fs.readFileSync(supportFile, 'utf8');
+
+    // Replace library import with local import
+    if (content.includes('universal-cypress-framework/src/commands')) {
+        content = content.replace(
+            "import 'universal-cypress-framework/src/commands';",
+            "import './framework/commands';"
+        );
+    }
+    // If it doesn't have it yet (fresh install of template), add it
+    else if (!content.includes('./framework/commands')) {
+        content += "\n// Import framework commands\nimport './framework/commands';\n";
+    }
+
+    fs.writeFileSync(supportFile, content);
+}
+
+// 5. Update Example Tests
+const exampleFile = path.join(cypressDir, 'e2e', 'example.cy.js');
+if (fs.existsSync(exampleFile)) {
+    let content = fs.readFileSync(exampleFile, 'utf8');
+    if (content.includes('universal-cypress-framework')) {
+        content = content.replace(
+            "import { BasePage } from 'universal-cypress-framework';",
+            "import { BasePage } from '../support/framework';"
+        );
+        fs.writeFileSync(exampleFile, content);
     }
 }
 
